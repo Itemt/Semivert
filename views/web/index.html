@@ -3,18 +3,38 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <meta name="description"
     content="Semivert - La app gamificada de las Cuatro Semillas Verdes. Aprende sobre el cuidado del medio ambiente completando misiones ecológicas en Barrancabermeja." />
   <meta name="theme-color" content="#1a3a2a" />
-  <title> Semivert - Las Cuatro Semillas Verdes</title>
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Semivert" />
+  <meta name="application-name" content="Semivert" />
+  <title>Semivert - Las Cuatro Semillas Verdes</title>
+
+  <!-- PWA & Iconos -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <!-- Open Graph & Redes Sociales -->
+  <meta property="og:title" content="Semivert - Las Cuatro Semillas Verdes" />
+  <meta property="og:description" content="App ecológica y gamificada de Barrancabermeja. Cuida el medio ambiente completando misiones ecológicas y cultivando tu árbol guardián." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="icon-512.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Semivert - Las Cuatro Semillas Verdes" />
+  <meta name="twitter:description" content="App ecológica y gamificada de Barrancabermeja. Cuida el medio ambiente completando misiones ecológicas y cultivando tu árbol guardián." />
+  <meta name="twitter:image" content="icon-512.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
 </head>
 
 <body>
@@ -203,6 +223,7 @@
             <div class="avatar-dropdown-divider"></div>
             <button class="avatar-dd-item" id="dd-ir-perfil">👤 Mi Perfil</button>
             <button class="avatar-dd-item" id="dd-cambiar-foto">📷 Cambiar Foto</button>
+            <button class="avatar-dd-item" id="dd-config-servidor">⚙️ Conexión Servidor</button>
             <div class="avatar-dropdown-divider"></div>
             <button class="avatar-dd-item avatar-dd-danger" id="dd-cerrar-sesion">🚪 Cerrar Sesión</button>
           </div>
@@ -514,6 +535,18 @@
               <span class="stat-label">🪙 Monedas</span>
             </div>
           </div>
+
+          <!-- Estado de conexión y servidor -->
+          <div class="perfil-servidor-card">
+            <div class="servidor-chip" id="perfil-servidor-chip">
+              <span class="chip-dot"></span>
+              <span id="perfil-servidor-label">Modo Web Autónomo (Local)</span>
+            </div>
+            <button class="btn-secondary btn-sm" id="btn-perfil-config-servidor">
+              ⚙️ Conexión Backend
+            </button>
+          </div>
+
           <button class="btn-danger" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
         </div>
       </div>
@@ -545,6 +578,47 @@
     </nav>
 
   </section>
+
+  <!-- MODAL: Configuración de Servidor / Backend -->
+  <div id="modal-servidor" class="modal-backdrop oculto">
+    <div class="modal-contenido modal-servidor-contenido">
+      <div class="modal-header">
+        <div class="modal-titulo-wrap">
+          <span class="modal-icono">⚙️</span>
+          <h3 class="modal-titulo">Configuración de Conexión</h3>
+        </div>
+        <button class="modal-cerrar" id="btn-cerrar-modal-servidor" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="servidor-info-card">
+          <div class="servidor-status-badge" id="modal-servidor-badge">
+            <span class="chip-dot"></span>
+            <span id="modal-servidor-status-text">🟢 Modo Web Autónomo</span>
+          </div>
+          <p class="servidor-desc">
+            Semivert funciona de manera 100% autónoma en la web (Vercel/PWA) con persistencia local permanente en tu navegador. Si cuentas con el backend FastAPI de Semivert en un servidor remoto, puedes vincularlo aquí.
+          </p>
+        </div>
+
+        <div class="input-group">
+          <label for="servidor-url-input">URL del Backend API</label>
+          <input type="url" id="servidor-url-input" placeholder="https://api.tu-servidor.com" autocomplete="url" />
+          <small class="input-ayuda">Déjalo vacío para usar el Modo Web Autónomo local.</small>
+        </div>
+
+        <div id="servidor-mensaje" class="mensaje oculto"></div>
+
+        <div class="servidor-acciones">
+          <button class="btn-secondary" id="btn-resetear-servidor">
+            🟢 Usar Modo Autónomo Local
+          </button>
+          <button class="btn-primary" id="btn-guardar-servidor">
+            🔗 Probar y Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Toast de notificaciones -->
   <div id="toast-container" class="toast-container"></div>

@@ -125,6 +125,18 @@ export class AppController {
     if (ddFoto) ddFoto.addEventListener('click', () => { this.abrirSelectorFoto(); this.mainView.cerrarAvatarDropdown(); });
     const ddSalir = document.getElementById('dd-cerrar-sesion');
     if (ddSalir) ddSalir.addEventListener('click', () => { this.cerrarSesion(); this.mainView.cerrarAvatarDropdown(); });
+    const ddServidor = document.getElementById('dd-config-servidor');
+    if (ddServidor) ddServidor.addEventListener('click', () => { this.abrirModalServidor(); this.mainView.cerrarAvatarDropdown(); });
+
+    // Configuración de Servidor
+    const btnPerfilServidor = document.getElementById('btn-perfil-config-servidor');
+    if (btnPerfilServidor) btnPerfilServidor.addEventListener('click', () => this.abrirModalServidor());
+    const btnCerrarServidor = document.getElementById('btn-cerrar-modal-servidor');
+    if (btnCerrarServidor) btnCerrarServidor.addEventListener('click', () => this.cerrarModalServidor());
+    const btnGuardarServidor = document.getElementById('btn-guardar-servidor');
+    if (btnGuardarServidor) btnGuardarServidor.addEventListener('click', () => this.guardarConfiguracionServidor());
+    const btnResetearServidor = document.getElementById('btn-resetear-servidor');
+    if (btnResetearServidor) btnResetearServidor.addEventListener('click', () => this.resetearAModoAutonomo());
 
     // Cerrar sesión
     document.querySelector('.sidebar-logout').addEventListener('click', () => this.cerrarSesion());
@@ -182,6 +194,15 @@ export class AppController {
       await this.model.loginCorreo(correo, password);
       this.entrarApp();
     } catch (err) {
+      if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('Load failed'))) {
+        this.loginView.mostrarMensaje('Modo interactivo local activado. ¡Bienvenido Guardián! 🌿', 'exito');
+        this.model.activarDemo();
+        this.model.usuario.correo = correo;
+        this.model.guardarSesion();
+        setTimeout(() => this.entrarApp(), 800);
+        return;
+      }
+
       // Check if error is due to email not registered (404)
       const noRegistrado = err.message && (
         err.message.includes('no está registrado') || 
@@ -240,6 +261,16 @@ export class AppController {
       this.loginView.mostrarMensaje('¡Bienvenido a las Semillas Verdes! 🌱', 'exito');
       setTimeout(() => this.entrarApp(), 1000);
     } catch (err) {
+      if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('Load failed'))) {
+        this.loginView.mostrarMensaje('¡Guardián creado en modo local! Bienvenido a las Semillas Verdes 🌱', 'exito');
+        this.model.activarDemo();
+        this.model.usuario.nombre = nombre;
+        this.model.usuario.apodo = apodo || nombre;
+        this.model.usuario.correo = correo;
+        this.model.guardarSesion();
+        setTimeout(() => this.entrarApp(), 800);
+        return;
+      }
       this.loginView.mostrarMensaje(err.message || 'Error al crear la cuenta. Inténtalo de nuevo.', 'error');
     }
   }
@@ -342,6 +373,17 @@ export class AppController {
       this.mainView.toast(mensaje, 'exito');
       this.entrarApp();
     } catch (err) {
+      if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('Load failed'))) {
+        this.loginView.mostrarMensaje('Rostro registrado localmente. ¡Bienvenido Guardián! 🌿', 'exito');
+        this.model.activarDemo();
+        if (nombre) {
+          this.model.usuario.nombre = nombre;
+          this.model.usuario.apodo = nombre;
+        }
+        this.model.guardarSesion();
+        setTimeout(() => this.entrarApp(), 800);
+        return;
+      }
       this.loginView.mostrarMensaje(err.message || 'Error en el reconocimiento facial. Intenta de nuevo.', 'error');
     }
   }
@@ -429,6 +471,7 @@ export class AppController {
         break;
       case 'perfil':
         this.perfilView.renderPerfil(this.model.usuario, completadasCount);
+        this.perfilView.actualizarEstadoServidor(this.model.hasRemoteBackend(), this.model.getApiUrl());
         break;
     }
   }
@@ -589,5 +632,106 @@ export class AppController {
       this.animFrameArbol = requestAnimationFrame(animar);
     };
     animar();
+  }
+
+  // ─── Modal de Servidor y Conexión Backend ───────────────────
+  abrirModalServidor() {
+    const modal = document.getElementById('modal-servidor');
+    const input = document.getElementById('servidor-url-input');
+    const badgeText = document.getElementById('modal-servidor-status-text');
+    const badge = document.getElementById('modal-servidor-badge');
+    const msg = document.getElementById('servidor-mensaje');
+
+    if (msg) msg.classList.add('oculto');
+    if (input) input.value = localStorage.getItem('semivert_api_base') || window.SEMIVERT_API_BASE || '';
+
+    const hasRemote = this.model.hasRemoteBackend();
+    if (badgeText && badge) {
+      if (hasRemote) {
+        badgeText.textContent = `🌐 Conectado: ${this.model.getApiUrl()}`;
+        badge.style.background = 'rgba(56, 189, 248, 0.15)';
+        badge.style.color = '#38bdf8';
+      } else {
+        badgeText.textContent = '🟢 Modo Web Autónomo (Local)';
+        badge.style.background = 'rgba(74, 222, 128, 0.15)';
+        badge.style.color = '#4ade80';
+      }
+    }
+
+    if (modal) modal.classList.remove('oculto');
+  }
+
+  cerrarModalServidor() {
+    const modal = document.getElementById('modal-servidor');
+    if (modal) modal.classList.add('oculto');
+  }
+
+  async guardarConfiguracionServidor() {
+    const input = document.getElementById('servidor-url-input');
+    const msg = document.getElementById('servidor-mensaje');
+    let url = (input?.value || '').trim();
+
+    if (!url) {
+      this.resetearAModoAutonomo();
+      return;
+    }
+
+    url = url.replace(/\/+$/, '');
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+
+    if (msg) {
+      msg.textContent = 'Probando conexión con el servidor backend... 🔄';
+      msg.className = 'mensaje';
+      msg.classList.remove('oculto');
+    }
+
+    try {
+      const resp = await fetch(`${url}/salud`, { method: 'GET' });
+      if (resp.ok) {
+        localStorage.setItem('semivert_api_base', url);
+        window.SEMIVERT_API_BASE = url;
+        if (msg) {
+          msg.textContent = '¡Conexión exitosa con el backend de Semivert! 🌿';
+          msg.className = 'mensaje exito';
+        }
+        this.mainView.toast('Backend conectado correctamente 🚀', 'exito');
+        setTimeout(() => {
+          this.cerrarModalServidor();
+          this.perfilView.actualizarEstadoServidor(true, url);
+        }, 800);
+      } else {
+        throw new Error(`El servidor respondió con código HTTP ${resp.status}`);
+      }
+    } catch (err) {
+      localStorage.setItem('semivert_api_base', url);
+      window.SEMIVERT_API_BASE = url;
+      if (msg) {
+        msg.textContent = `URL guardada. (Aviso: /salud no respondió: ${err.message}. La app usará fallback web automático).`;
+        msg.className = 'mensaje error';
+      }
+      this.mainView.toast('URL guardada con fallback local activo ⚠️', 'info');
+      setTimeout(() => {
+        this.cerrarModalServidor();
+        this.perfilView.actualizarEstadoServidor(true, url);
+      }, 2000);
+    }
+  }
+
+  resetearAModoAutonomo() {
+    localStorage.removeItem('semivert_api_base');
+    window.SEMIVERT_API_BASE = '';
+    const msg = document.getElementById('servidor-mensaje');
+    if (msg) {
+      msg.textContent = 'Modo Web Autónomo activado. Tus datos se guardan en el navegador 🌿';
+      msg.className = 'mensaje exito';
+      msg.classList.remove('oculto');
+    }
+    this.mainView.toast('Modo Web Autónomo activado 🟢', 'exito');
+    setTimeout(() => {
+      this.cerrarModalServidor();
+      this.perfilView.actualizarEstadoServidor(false, '');
+    }, 600);
   }
 }

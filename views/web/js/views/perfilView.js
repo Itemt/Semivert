@@ -36,4 +36,24 @@ export class PerfilView {
       }
     }
   }
+
+  actualizarEstadoServidor(hasRemote, url) {
+    const chip = document.getElementById('perfil-servidor-chip');
+    const label = document.getElementById('perfil-servidor-label');
+    if (!chip || !label) return;
+
+    if (hasRemote && url) {
+      chip.classList.add('remoto');
+      try {
+        const parsed = new URL(url);
+        label.textContent = `Backend: ${parsed.hostname}`;
+      } catch (_) {
+        label.textContent = 'Backend Remoto';
+      }
+    } else {
+      chip.classList.remove('remoto');
+      label.textContent = 'Modo Web Autónomo (Local)';
+    }
+  }
 }
+

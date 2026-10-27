@@ -3,7 +3,20 @@
  * Configuraciones globales y datos demo para Semiverd MVP
  */
 
-export const API_BASE = window.location.origin;
+export const getApiBase = () => {
+  if (typeof window === 'undefined') return '';
+  return window.SEMIVERT_API_BASE || localStorage.getItem('semivert_api_base') || '';
+};
+
+export const API_BASE = getApiBase();
+
+export const resolvePictureUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return './' + url.replace(/^\.?\//, '');
+};
 
 export const PUNTOS_NIVEL = {
   'Semilla': 100,

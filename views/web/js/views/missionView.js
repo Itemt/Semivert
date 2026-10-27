@@ -3,6 +3,8 @@
  * View: Gestiona la lista de misiones y la ventana modal con detalles de cada misión.
  */
 
+import { resolvePictureUrl } from '../config.js';
+
 export class MissionView {
   constructor() {
     this.container = document.getElementById('misiones-lista');
@@ -96,8 +98,11 @@ export class MissionView {
         dialogoLayout.classList.add('oculto');
       }
 
+      const resolveImgUrl = resolvePictureUrl;
+
       if (m.imagenes_personajes && m.imagenes_personajes.length > 0) {
-        m.imagenes_personajes.forEach((imgUrl, idx) => {
+        m.imagenes_personajes.forEach((rawImgUrl, idx) => {
+          const imgUrl = resolveImgUrl(rawImgUrl);
           const img = document.createElement('img');
           img.src = imgUrl;
           img.alt = 'Personaje';
@@ -121,7 +126,7 @@ export class MissionView {
             
             // Mostrar diálogo
             if (dialogoLayout && dialogoTexto && spriteImg) {
-              const msg = this.getMensajePersonaje(nombre, imgUrl);
+              const msg = this.getMensajePersonaje(nombre, rawImgUrl);
               spriteImg.src = imgUrl;
               spriteImg.alt = nombre;
               dialogoTexto.innerHTML = `<strong>${nombre}:</strong> "${msg}"`;

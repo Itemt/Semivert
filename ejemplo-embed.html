@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demostración de Integración — Semivert</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-color: #0b130e;
+      --surface-color: #122218;
+      --card-bg: #182e21;
+      --accent: #34d399;
+      --accent-glow: rgba(52, 211, 153, 0.25);
+      --text: #f0fdf4;
+      --text-muted: #94a3b8;
+      --border: rgba(52, 211, 153, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top, #143021 0%, var(--bg-color) 70%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 40px 20px 80px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.lead {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 680px;
+      margin: 0 auto 24px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-2px);
+    }
+
+    /* Embedded Box */
+    .embed-section {
+      background: var(--surface-color);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 56px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    .embed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 0 8px;
+    }
+
+    .embed-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 10px #34d399;
+      display: inline-block;
+    }
+
+    .app-frame-container {
+      width: 100%;
+      height: 820px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .app-frame-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Code Snippets Section */
+    .snippets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: var(--surface-color);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #a7f3d0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+
+    pre {
+      background: #09130c;
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 13px;
+      overflow-x: auto;
+      color: #6ee7b7;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">🌱 Semivert — Integración Web Inmediata</div>
+      <h1>Semivert en tu Sitio Web</h1>
+      <p class="lead">
+        El clon completo de <strong>Semivert</strong> está listo con todos sus recursos, fotos de personajes y lógica modular optimizada para incrustarse en cualquier página HTML en segundos.
+      </p>
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="Semivert.openModal()">
+          ✨ Probar en Modal Emergente
+        </button>
+        <a href="./semivert-web/index.html" target="_blank" class="btn btn-secondary">
+          ↗️ Abrir Pantalla Completa
+        </a>
+      </div>
+    </header>
+
+    <!-- Sección de Incrustación Directa (Iframe) con selector de orientación -->
+    <section class="embed-section">
+      <div class="embed-header">
+        <div class="embed-title">
+          <span class="status-dot"></span>
+          <span>Semivert Incrustado (Simulador de Orientación en Vivo)</span>
+        </div>
+        <div class="device-toggles" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="btn-view-desktop" class="btn-toggle-view active" onclick="setFrameView('desktop')" style="padding: 6px 14px; font-size: 13px; font-weight: 700; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: #0b130e; cursor: pointer;">
+            🖥️ Escritorio
+          </button>
+          <button id="btn-view-landscape" class="btn-toggle-view" onclick="setFrameView('landscape')" style="padding: 6px 14px; font-size: 13px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: var(--text); cursor: pointer;">
+            🔄 Mobile Horizontal (Landscape)
+          </button>
+          <button id="btn-view-portrait" class="btn-toggle-view" onclick="setFrameView('portrait')" style="padding: 6px 14px; font-size: 13px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: var(--text); cursor: pointer;">
+            📱 Mobile Vertical (Portrait)
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; width: 100%; transition: all 0.35s ease;">
+        <div id="app-frame-wrapper" class="app-frame-container" style="transition: width 0.35s ease, height 0.35s ease; margin: 0 auto;">
+          <!-- Iframe directo de Semivert -->
+          <iframe id="semivert-iframe" src="./semivert-web/index.html" title="Semivert Web" allow="camera; microphone; autoplay"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function setFrameView(mode) {
+        const wrapper = document.getElementById('app-frame-wrapper');
+        const btns = document.querySelectorAll('.btn-toggle-view');
+        btns.forEach(b => {
+          b.style.background = 'rgba(255,255,255,0.08)';
+          b.style.color = 'var(--text)';
+          b.style.borderColor = 'var(--border)';
+        });
+
+        if (mode === 'desktop') {
+          wrapper.style.width = '100%';
+          wrapper.style.height = '820px';
+          document.getElementById('btn-view-desktop').style.background = 'var(--accent)';
+          document.getElementById('btn-view-desktop').style.color = '#0b130e';
+          document.getElementById('btn-view-desktop').style.borderColor = 'var(--accent)';
+        } else if (mode === 'landscape') {
+          wrapper.style.width = '840px';
+          wrapper.style.height = '430px';
+          document.getElementById('btn-view-landscape').style.background = 'var(--accent)';
+          document.getElementById('btn-view-landscape').style.color = '#0b130e';
+          document.getElementById('btn-view-landscape').style.borderColor = 'var(--accent)';
+        } else if (mode === 'portrait') {
+          wrapper.style.width = '390px';
+          wrapper.style.height = '780px';
+          document.getElementById('btn-view-portrait').style.background = 'var(--accent)';
+          document.getElementById('btn-view-portrait').style.color = '#0b130e';
+          document.getElementById('btn-view-portrait').style.borderColor = 'var(--accent)';
+        }
+      }
+    </script>
+
+    <!-- Métodos de Integración para Copiar y Pegar -->
+    <section>
+      <h2 style="font-size: 1.6rem; text-align: center; margin-bottom: 24px; color: #f0fdf4;">
+        📋 Elige el método para tu web urgente
+      </h2>
+
+      <div class="snippets-grid">
+        <!-- Opción 1: Iframe Estándar -->
+        <div class="card">
+          <h3>📦 1. Iframe Directo (Recomendado)</h3>
+          <p>
+            Copia la carpeta <code>semivert-web</code> en tu servidor y pega este código en tu archivo HTML donde quieras que aparezca el juego.
+          </p>
+          <pre><code>&lt;!-- Semivert en tu HTML --&gt;
+&lt;div style="width: 100%; height: 800px; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);"&gt;
+  &lt;iframe 
+    src="./semivert-web/index.html" 
+    style="width: 100%; height: 100%; border: none;" 
+    allow="camera" 
+    loading="lazy"&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Opción 2: Script Embed Automático -->
+        <div class="card">
+          <h3>⚡ 2. Script Embed Automático</h3>
+          <p>
+            Incluye el script <code>semivert-embed.js</code> y coloca un contenedor con el atributo <code>data-semivert-embed</code>.
+          </p>
+          <pre><code>&lt;!-- 1. Cargar el script --&gt;
+&lt;script src="./semivert-web/semivert-embed.js"&gt;&lt;/script&gt;
+
+&lt;!-- 2. Contenedor automático --&gt;
+&lt;div data-semivert-embed data-height="820px"&gt;&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Opción 3: Modal con Botón Flotante -->
+        <div class="card">
+          <h3>🪄 3. Modal / Botón Flotante</h3>
+          <p>
+            Agrega un botón en cualquier parte de tu web que abra Semivert como ventana modal emergente con fondo difuminado.
+          </p>
+          <pre><code>&lt;script src="./semivert-web/semivert-embed.js"&gt;&lt;/script&gt;
+
+&lt;!-- Botón para abrir modal --&gt;
+&lt;button onclick="Semivert.openModal()"&gt;
+  🌱 Jugar Semivert
+&lt;/button&gt;
+
+&lt;!-- O botón flotante permanente: --&gt;
+&lt;script&gt;
+  Semivert.addFloatingButton();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Cargar el script de integración para habilitar la modal y el botón flotante -->
+  <script src="./semivert-web/semivert-embed.js"></script>
+  <script>
+    // Añade el botón flotante en la esquina inferior
+    Semivert.addFloatingButton({ text: '🌱 Semivert Modal' });
+  </script>
+</body>
+</html>

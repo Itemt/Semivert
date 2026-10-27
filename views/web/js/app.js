@@ -51,4 +51,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Inicializar controlador (arranca tema, sesión, manejadores de eventos, etc.)
   controller.inicializar();
+
+  // Registrar Service Worker para PWA y modo offline
+  if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.warn('[PWA] Service Worker no registrado:', err);
+      });
+    });
+  }
 });

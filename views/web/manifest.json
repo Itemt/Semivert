@@ -1,0 +1,32 @@
+{
+  "name": "Semivert - Las Cuatro Semillas Verdes",
+  "short_name": "Semivert",
+  "description": "App ecológica y gamificada de Barrancabermeja. Cuida el medio ambiente, aprende y sube de nivel tu árbol guardián.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1a12",
+  "theme_color": "#1a3a2a",
+  "lang": "es",
+  "categories": ["education", "games", "productivity"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
